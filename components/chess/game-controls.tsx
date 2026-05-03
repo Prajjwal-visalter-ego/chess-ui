@@ -10,8 +10,7 @@ import {
   ChevronLast, 
   ChevronLeft, 
   ChevronRight,
-  Send,
-  Sparkles
+  Send
 } from "lucide-react"
 import {
   Tooltip,
@@ -29,7 +28,6 @@ interface GameControlsProps {
   onNextMove?: () => void
   onLastMove?: () => void
   onSendMessage?: (message: string) => void
-  onPlayOnline?: () => void
   onNewGame?: () => void
   activeTab?: "new" | "resign"
 }
@@ -42,7 +40,6 @@ export function GameControls({
   onNextMove,
   onLastMove,
   onSendMessage,
-  onPlayOnline,
   onNewGame,
   activeTab = "new"
 }: GameControlsProps) {
@@ -78,13 +75,6 @@ export function GameControls({
         <div className="p-3 space-y-2">
           {tab === "new" ? (
             <>
-              <Button 
-                className="w-full gap-2 h-10 bg-primary hover:bg-primary/90"
-                onClick={onPlayOnline}
-              >
-                <Sparkles className="h-4 w-4" />
-                Play Online
-              </Button>
             </>
           ) : (
             <div className="flex gap-2">
