@@ -50,12 +50,7 @@ export function MoveHistory({
         </div>
       </div>
 
-      {/* Opening name */}
-      {openingName && (
-        <div className="px-3 py-1.5 bg-secondary/30 border-b border-border">
-          <span className="text-xs text-muted-foreground">{openingName}</span>
-        </div>
-      )}
+
 
       {/* Moves list */}
       <ScrollArea className="flex-1 custom-scrollbar">
