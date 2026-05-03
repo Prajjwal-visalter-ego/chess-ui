@@ -78,31 +78,30 @@ export default function ChessGame() {
       {/* Collapsible Sidebar */}
       <Sidebar collapsed={sidebarCollapsed} onCollapse={setSidebarCollapsed} />
 
-      {/* Main Container: Flexbox, horizontal on desktop, vertical on mobile */}
+      {/* Main Container: Auto Layout / Flexbox
+          - Desktop: horizontal (row), centered
+          - Mobile: vertical (column), centered
+          - Width: 100vw, Height: 100vh
+      */}
       <main
         className={cn(
           "h-screen w-full transition-all duration-300 ease-in-out",
           "flex flex-col lg:flex-row items-center justify-center",
-          "p-2 sm:p-3 lg:p-4 gap-2 lg:gap-3",
+          "p-2 sm:p-3 lg:p-4 gap-2 lg:gap-4",
           sidebarCollapsed ? "pl-14 sm:pl-16" : "pl-48 sm:pl-52"
         )}
       >
-        {/* Board Section - Player info + Board with strict 1:1 aspect ratio */}
-        {/* Uses container query: fills available space but constrained by max-height: 90vh and max-width */}
+        {/* Chessboard Frame: 
+            - Fill container for width/height
+            - Constrained: max-height 90vh, max-width 100%
+            - Maintains strict 1:1 aspect ratio
+        */}
         <div 
           className={cn(
             "flex flex-col gap-1 shrink-0",
-            "w-full lg:w-auto"
+            "w-full lg:w-auto",
+            "max-w-[min(calc(90vh-70px),560px)]"
           )}
-          style={{
-            /* 
-             * Board size calculation:
-             * - Desktop: Use min of (90vh - player bars) or available width
-             * - The board+player container height = 90vh max
-             * - Player bars take ~70px total, so board = 90vh - 70px
-             */
-            maxWidth: 'min(calc(90vh - 70px), 560px)',
-          }}
         >
           {/* Opponent info */}
           <PlayerInfo
@@ -115,16 +114,16 @@ export default function ChessGame() {
             materialAdvantage={1}
           />
 
-          {/* Chess Board Container - STRICT 1:1 ASPECT RATIO */}
-          {/* Width fills container, height is constrained to maintain square */}
+          {/* Chess Board Container - STRICT 1:1 ASPECT RATIO
+              - Width: Fill container (100% of parent)
+              - Height: Constrained via aspect-ratio to maintain square
+              - Max constraints ensure it never overflows screen bounds
+          */}
           <div 
-            className="relative w-full"
-            style={{
-              /* Force square: width = 100% of parent, height = same as width via aspect-ratio */
-              aspectRatio: '1 / 1',
-              maxHeight: 'calc(90vh - 70px)',
-              maxWidth: 'min(calc(90vh - 70px), 560px)',
-            }}
+            className={cn(
+              "relative w-full aspect-square",
+              "max-h-[calc(90vh-70px)] max-w-[min(calc(90vh-70px),560px)]"
+            )}
           >
             <ChessBoard
               position={position}
@@ -146,7 +145,10 @@ export default function ChessGame() {
           />
         </div>
 
-        {/* Settings Panel - Desktop: inline vertical bar, Mobile: fixed to right edge */}
+        {/* Settings Panel - Desktop: Fixed width / Hug contents, inline next to board
+            - Part of auto layout flow on desktop
+            - Mobile: Uses absolute positioning (see below)
+        */}
         <div className="hidden lg:flex items-center shrink-0">
           <SettingsPanel
             soundEnabled={soundEnabled}
@@ -160,17 +162,17 @@ export default function ChessGame() {
           />
         </div>
 
-        {/* Right Panel: Move History & Controls - Desktop: fixed width, Mobile: below board */}
+        {/* Right Panel: Move History & Controls
+            - Desktop: Fixed width, placed next to Settings
+            - Mobile: Below board, part of vertical auto layout flow
+        */}
         <div 
           className={cn(
             "flex flex-col bg-card rounded-xl border border-border overflow-hidden shrink-0",
             "w-full lg:w-64 xl:w-72",
-            "flex-1 lg:flex-none"
+            "flex-1 lg:flex-none",
+            "max-h-[min(90vh,600px)]"
           )}
-          style={{
-            /* Desktop: match board section height */
-            maxHeight: 'min(90vh, 600px)',
-          }}
         >
           {/* Game Controls */}
           <GameControls
@@ -199,7 +201,11 @@ export default function ChessGame() {
           </div>
         </div>
 
-        {/* Mobile Settings - Fixed position, pinned to right edge */}
+        {/* Mobile Settings Panel
+            - Absolute positioning with constraints: Right edge, vertically centered
+            - Floats independently, does not affect document flow
+            - Does not overlap Move History (pinned to right edge)
+        */}
         <div className="lg:hidden fixed right-3 top-1/2 -translate-y-1/2 z-50">
           <SettingsPanel
             soundEnabled={soundEnabled}

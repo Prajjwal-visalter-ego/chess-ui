@@ -50,8 +50,6 @@ export function MoveHistory({
         </div>
       </div>
 
-
-
       {/* Moves list */}
       <ScrollArea className="flex-1 custom-scrollbar">
         <div className="p-2">
@@ -60,39 +58,77 @@ export function MoveHistory({
               <span className="text-xs">No moves yet</span>
             </div>
           ) : (
-            <div className="space-y-0.5">
-              {moves.map((move, index) => (
-                <div
-                  key={move.number}
-                  className="grid grid-cols-[28px_1fr_1fr] gap-0.5 text-sm animate-slide-in"
-                  style={{ animationDelay: `${index * 30}ms` }}
-                >
-                  <span className="text-muted-foreground text-right pr-1 text-xs leading-7">
-                    {move.number}.
-                  </span>
-                  <button
-                    onClick={() => onMoveClick?.(index * 2)}
-                    className={cn(
-                      "px-2 py-1 rounded text-left text-xs transition-colors hover:bg-secondary",
-                      currentMoveIndex === index * 2 && "bg-primary/20 text-primary"
-                    )}
+            <>
+              {/* Desktop: Grid layout for moves */}
+              <div className="hidden lg:block space-y-0.5">
+                {moves.map((move, index) => (
+                  <div
+                    key={move.number}
+                    className="grid grid-cols-[28px_1fr_1fr] gap-0.5 text-sm animate-slide-in"
+                    style={{ animationDelay: `${index * 30}ms` }}
                   >
-                    {move.white}
-                  </button>
-                  {move.black && (
+                    <span className="text-muted-foreground text-right pr-1 text-xs leading-7">
+                      {move.number}.
+                    </span>
                     <button
-                      onClick={() => onMoveClick?.(index * 2 + 1)}
+                      onClick={() => onMoveClick?.(index * 2)}
                       className={cn(
                         "px-2 py-1 rounded text-left text-xs transition-colors hover:bg-secondary",
-                        currentMoveIndex === index * 2 + 1 && "bg-primary/20 text-primary"
+                        currentMoveIndex === index * 2 && "bg-primary/20 text-primary"
                       )}
                     >
-                      {move.black}
+                      {move.white}
                     </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                    {move.black && (
+                      <button
+                        onClick={() => onMoveClick?.(index * 2 + 1)}
+                        className={cn(
+                          "px-2 py-1 rounded text-left text-xs transition-colors hover:bg-secondary",
+                          currentMoveIndex === index * 2 + 1 && "bg-primary/20 text-primary"
+                        )}
+                      >
+                        {move.black}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile: Horizontal inline wrapping layout */}
+              <div className="lg:hidden flex flex-wrap items-center gap-x-3 gap-y-1">
+                {moves.map((move, index) => (
+                  <div
+                    key={move.number}
+                    className="flex items-center gap-1 text-sm animate-slide-in"
+                    style={{ animationDelay: `${index * 30}ms` }}
+                  >
+                    <span className="text-muted-foreground text-xs">
+                      {move.number}.
+                    </span>
+                    <button
+                      onClick={() => onMoveClick?.(index * 2)}
+                      className={cn(
+                        "px-1.5 py-0.5 rounded text-xs transition-colors hover:bg-secondary",
+                        currentMoveIndex === index * 2 && "bg-primary/20 text-primary"
+                      )}
+                    >
+                      {move.white}
+                    </button>
+                    {move.black && (
+                      <button
+                        onClick={() => onMoveClick?.(index * 2 + 1)}
+                        className={cn(
+                          "px-1.5 py-0.5 rounded text-xs transition-colors hover:bg-secondary",
+                          currentMoveIndex === index * 2 + 1 && "bg-primary/20 text-primary"
+                        )}
+                      >
+                        {move.black}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </ScrollArea>
