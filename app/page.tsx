@@ -150,12 +150,15 @@ export default function ChessGame() {
           </div>
         </div>
 
-        {/* Side Panel: Move History & Controls */}
+        {/* Side Panel: Move History & Controls
+            - Mobile: Definite height (h-[40vh]) so inner flex-1 ScrollArea renders
+            - Desktop: Fills available height next to play area
+        */}
         <div 
           className={cn(
-            "flex flex-col bg-card rounded-xl border border-border overflow-hidden",
+            "flex flex-col bg-card rounded-xl border border-border overflow-hidden shrink-0",
             "w-full lg:flex-1 lg:min-w-[300px] lg:max-w-[400px]",
-            "h-auto lg:h-full max-h-[50vh] lg:max-h-none"
+            "h-[40vh] lg:h-full"
           )}
         >
           {/* Game Controls */}
