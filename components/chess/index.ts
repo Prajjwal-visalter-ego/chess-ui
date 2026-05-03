@@ -1,0 +1,6 @@
+export { ChessBoard } from './chess-board'
+export { PlayerInfo } from './player-info'
+export { MoveHistory } from './move-history'
+export { GameControls } from './game-controls'
+export { SettingsPanel } from './settings-panel'
+export { Sidebar } from './sidebar'
