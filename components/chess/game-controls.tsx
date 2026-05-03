@@ -11,9 +11,7 @@ import {
   ChevronLeft, 
   ChevronRight,
   Send,
-  Sparkles,
-  Users,
-  Bot
+  Sparkles
 } from "lucide-react"
 import {
   Tooltip,
@@ -32,8 +30,6 @@ interface GameControlsProps {
   onLastMove?: () => void
   onSendMessage?: (message: string) => void
   onPlayOnline?: () => void
-  onPlayBot?: () => void
-  onPlayFriend?: () => void
   onNewGame?: () => void
   activeTab?: "new" | "resign"
 }
@@ -47,8 +43,6 @@ export function GameControls({
   onLastMove,
   onSendMessage,
   onPlayOnline,
-  onPlayBot,
-  onPlayFriend,
   onNewGame,
   activeTab = "new"
 }: GameControlsProps) {
@@ -91,25 +85,6 @@ export function GameControls({
                 <Sparkles className="h-4 w-4" />
                 Play Online
               </Button>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  variant="secondary" 
-                  className="gap-1.5 h-9 text-xs"
-                  onClick={onPlayBot}
-                >
-                  <Bot className="h-3.5 w-3.5" />
-                  Play Bot
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  className="gap-1.5 h-9 text-xs"
-                  onClick={onPlayFriend}
-                >
-                  <Users className="h-3.5 w-3.5" />
-                  Play a Friend
-                </Button>
-              </div>
             </>
           ) : (
             <div className="flex gap-2">
