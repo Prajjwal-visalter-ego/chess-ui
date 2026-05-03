@@ -35,6 +35,7 @@ const SAMPLE_MOVES = [
 
 export default function ChessGame() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [position, setPosition] = useState(SAMPLE_POSITION)
   const [currentMoveIndex, setCurrentMoveIndex] = useState(17)
   const [lastMove, setLastMove] = useState<{ from: [number, number]; to: [number, number] } | null>({
@@ -74,113 +75,93 @@ export default function ChessGame() {
   }, [])
 
   return (
-    <div className="h-screen w-screen bg-background overflow-hidden">
-      {/* Collapsible Sidebar */}
-      <Sidebar collapsed={sidebarCollapsed} onCollapse={setSidebarCollapsed} />
+    <div className="flex h-screen w-screen overflow-hidden bg-background relative">
+      {/* Collapsible Sidebar with Mobile Drawer */}
+      <Sidebar 
+        collapsed={sidebarCollapsed} 
+        onCollapse={setSidebarCollapsed}
+        mobileOpen={mobileMenuOpen}
+        onMobileOpenChange={setMobileMenuOpen}
+      />
 
-      {/* Main Container: Auto Layout / Flexbox
-          - Desktop: horizontal (row), centered
-          - Mobile: vertical (column), centered
-          - Width: 100vw, Height: 100vh
-      */}
+      {/* Main Content Area */}
       <main
         className={cn(
-          "h-screen w-full transition-all duration-300 ease-in-out",
-          "flex flex-col lg:flex-row items-center justify-center",
-          "p-2 sm:p-3 lg:p-4 gap-2 lg:gap-4",
-          sidebarCollapsed ? "pl-14 sm:pl-16" : "pl-48 sm:pl-52"
+          "flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden transition-all duration-300 ease-in-out",
+          "p-4 pt-18 lg:pt-4 gap-4",
+          // Account for sidebar width
+          sidebarCollapsed ? "lg:pl-20" : "lg:pl-56"
         )}
       >
-        {/* Chessboard Frame: 
-            - Fill container for width/height
-            - Constrained: max-height 90vh, max-width 100%
-            - Maintains strict 1:1 aspect ratio
-        */}
-        <div 
-          className={cn(
-            "flex flex-col gap-1 shrink-0",
-            "w-full lg:w-auto",
-            "max-w-[min(calc(90vh-70px),560px)]"
-          )}
-        >
-          {/* Opponent info */}
-          <PlayerInfo
-            name="Grandmaster_Sarah"
-            rating={2450}
-            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
-            timeLeft={blackTime}
-            isActive={activePlayer === 'black'}
-            capturedPieces={['P', 'B']}
-            materialAdvantage={1}
-          />
+        {/* Play Area Wrapper: Board + Profiles + Settings Toolbar */}
+        <div className="flex flex-row items-stretch justify-center gap-2 lg:gap-4 w-full lg:max-w-[70%]">
+          
+          {/* Left Column: Player Profiles + Board */}
+          <div className="flex flex-col flex-1 max-w-[85vh]">
+            {/* Top Player Profile - Fixed Height */}
+            <div className="h-12 flex items-center">
+              <PlayerInfo
+                name="Grandmaster_Sarah"
+                rating={2450}
+                avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+                timeLeft={blackTime}
+                isActive={activePlayer === 'black'}
+                capturedPieces={['P', 'B']}
+                materialAdvantage={1}
+              />
+            </div>
 
-          {/* Chess Board Container - STRICT 1:1 ASPECT RATIO
-              - Width: Fill container (100% of parent)
-              - Height: Constrained via aspect-ratio to maintain square
-              - Max constraints ensure it never overflows screen bounds
-          */}
-          <div 
-            className={cn(
-              "relative w-full aspect-square",
-              "max-h-[calc(90vh-70px)] max-w-[min(calc(90vh-70px),560px)]"
-            )}
-          >
-            <ChessBoard
-              position={position}
-              lastMove={lastMove}
-              onMove={handleMove}
-              flipped={flipped}
-            />
+            {/* Chessboard - Strict 1:1 Aspect Ratio */}
+            <div className="w-full aspect-square max-h-full">
+              <ChessBoard
+                position={position}
+                lastMove={lastMove}
+                onMove={handleMove}
+                flipped={flipped}
+              />
+            </div>
+
+            {/* Bottom Player Profile - Fixed Height */}
+            <div className="h-12 flex items-center">
+              <PlayerInfo
+                name="You"
+                rating={2410}
+                avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Player"
+                timeLeft={whiteTime}
+                isActive={activePlayer === 'white'}
+                isCurrentPlayer={true}
+                capturedPieces={['p']}
+              />
+            </div>
           </div>
 
-          {/* Current player info */}
-          <PlayerInfo
-            name="You"
-            rating={2410}
-            avatar="https://api.dicebear.com/7.x/avataaars/svg?seed=Player"
-            timeLeft={whiteTime}
-            isActive={activePlayer === 'white'}
-            isCurrentPlayer={true}
-            capturedPieces={['p']}
-          />
+          {/* Right Column: Settings Toolbar - Flex sibling, stretches with board */}
+          <div className="flex flex-col w-12 lg:w-14 justify-center shrink-0">
+            <SettingsPanel
+              soundEnabled={soundEnabled}
+              onToggleSound={() => setSoundEnabled(!soundEnabled)}
+              onFlipBoard={() => setFlipped(!flipped)}
+              flipped={flipped}
+              showCoordinates={showCoordinates}
+              onToggleCoordinates={() => setShowCoordinates(!showCoordinates)}
+              premovesEnabled={premovesEnabled}
+              onTogglePremoves={() => setPremovesEnabled(!premovesEnabled)}
+            />
+          </div>
         </div>
 
-        {/* Settings Panel - Desktop: Fixed width / Hug contents, inline next to board
-            - Part of auto layout flow on desktop
-            - Mobile: Uses absolute positioning (see below)
-        */}
-        <div className="hidden lg:flex items-center shrink-0">
-          <SettingsPanel
-            soundEnabled={soundEnabled}
-            onToggleSound={() => setSoundEnabled(!soundEnabled)}
-            onFlipBoard={() => setFlipped(!flipped)}
-            flipped={flipped}
-            showCoordinates={showCoordinates}
-            onToggleCoordinates={() => setShowCoordinates(!showCoordinates)}
-            premovesEnabled={premovesEnabled}
-            onTogglePremoves={() => setPremovesEnabled(!premovesEnabled)}
-          />
-        </div>
-
-        {/* Right Panel: Move History & Controls
-            - Desktop: Fixed width, placed next to Settings
-            - Mobile: Below board, part of vertical auto layout flow
-        */}
+        {/* Side Panel: Move History & Controls */}
         <div 
           className={cn(
-            "flex flex-col bg-card rounded-xl border border-border overflow-hidden shrink-0",
-            "w-full lg:w-64 xl:w-72",
-            "flex-1 lg:flex-none",
-            "max-h-[min(90vh,600px)]"
+            "flex flex-col bg-card rounded-xl border border-border overflow-hidden",
+            "w-full lg:flex-1 lg:min-w-[300px] lg:max-w-[400px]",
+            "h-auto lg:h-full max-h-[50vh] lg:max-h-none"
           )}
         >
           {/* Game Controls */}
           <GameControls
             onResign={() => console.log('Resign')}
             onOfferDraw={() => console.log('Offer draw')}
-            onPlayOnline={() => console.log('Play online')}
-            onPlayBot={() => console.log('Play bot')}
-            onPlayFriend={() => console.log('Play friend')}
             onFirstMove={() => setCurrentMoveIndex(0)}
             onPrevMove={() => setCurrentMoveIndex(Math.max(0, currentMoveIndex - 1))}
             onNextMove={() => setCurrentMoveIndex(Math.min(SAMPLE_MOVES.length * 2 - 1, currentMoveIndex + 1))}
@@ -192,31 +173,12 @@ export default function ChessGame() {
           <div className="flex-1 min-h-0 border-t border-border overflow-hidden">
             <MoveHistory
               moves={SAMPLE_MOVES}
-              openingName="Ruy Lopez: Morphy Defense"
               currentMoveIndex={currentMoveIndex}
               onMoveClick={setCurrentMoveIndex}
               timeControl="5+0"
               isLive={true}
             />
           </div>
-        </div>
-
-        {/* Mobile Settings Panel
-            - Absolute positioning with constraints: Right edge, vertically centered
-            - Floats independently, does not affect document flow
-            - Does not overlap Move History (pinned to right edge)
-        */}
-        <div className="lg:hidden fixed right-3 top-1/2 -translate-y-1/2 z-50">
-          <SettingsPanel
-            soundEnabled={soundEnabled}
-            onToggleSound={() => setSoundEnabled(!soundEnabled)}
-            onFlipBoard={() => setFlipped(!flipped)}
-            flipped={flipped}
-            showCoordinates={showCoordinates}
-            onToggleCoordinates={() => setShowCoordinates(!showCoordinates)}
-            premovesEnabled={premovesEnabled}
-            onTogglePremoves={() => setPremovesEnabled(!premovesEnabled)}
-          />
         </div>
       </main>
     </div>

@@ -14,7 +14,6 @@ interface Move {
 
 interface MoveHistoryProps {
   moves: Move[]
-  openingName?: string
   currentMoveIndex?: number
   onMoveClick?: (moveIndex: number) => void
   timeControl?: string
@@ -23,7 +22,6 @@ interface MoveHistoryProps {
 
 export function MoveHistory({ 
   moves, 
-  openingName,
   currentMoveIndex,
   onMoveClick,
   timeControl = "5+0",
